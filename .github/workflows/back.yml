@@ -1,0 +1,29 @@
+name: Automated Backup
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v3
+
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+
+      - name: Commit and Push to Backup Branch
+        run: |
+          git checkout -b backup-branch
+          git add .
+          git commit -m "Backup on $(date)" || echo "No changes to commit"
+          git push origin backup-branch --force
